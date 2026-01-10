@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let's Create Unforgetable Events</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="renewed.css">
+  <link rel="stylesheet" href="hamburger.css">
+
+</head>
+
+<body>
+  <section id="body">
+    <header id="main-nav">
+       <div>M<span style="color: rgb(255, 221, 0); background-color: black; border-radius: 5px; ">Y</span><br><span style="color: rgb(255, 221, 0); background-color:black;border-radius: 5px; ">—</span>EVENTS</div>
+     <div id="navigation-menu" class="nav-menu"><ul>
+      <li><a href="#" id="events-link">Events ⋅</a></li>  
+       <li><a href="#" id="log-link">Products ⋅</a></li>  
+        <li> <a href="#" id="log-link">Pricing ⋅</a></li> 
+         <li><a href="#" id="log-link">Partners</a></li>   
+      </ul>
+        </div>
+      <nav>
+        <a href="#" id="signOutBtn">Logout</a>
+        <button id="auth-button" class="event-btn"><a href="#">Book Events — It's Free!</a></button>
+      </nav>
+         <!-- Hamburger icon container -->
+    <div class="hamburger" id="hamburger-icon">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+    </header>
+    <main class="dashboard">   
+         <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="profile" id="user">
+      <h3>Profile</h3>
+    </div>
+    <div id="usersDiv"></div>
+    <a href="index.html" class="logout-btn">Logout</a>
+  </aside>
+          <!-- Main Content -->
+      <section class="content">
+
+        <!-- Header -->
+         <div id="event-box">
+          <h4>Unforgetable EventHub Manager</h4>
+          <p>Streamlined Event Booking</p>
+        </div>
+           <!-- Event Form -->
+        <form action="" class="form-container">
+          <input id="title" placeholder="Event Title" />
+          <input id="location" placeholder="Location" />
+          <input type="date" id="date" />
+          <input type="time" id="time" />
+          <button id="createEvent">Create Event</button>
+        </form>
+
+        <!-- Event Log -->
+        <div id="event-log">
+          <h4 style="background-color:  rgb(255, 221, 0); margin: auto; padding: 5px;">Event Log</h4>
+          <hr>
+          <div id="events"></div>
+        </div>
+        <div id="eventsDiv"></div>
+        </div>
+       </Section>
+         </main>
+                 <footer>
+        <div class="footer-container">
+            <div><h3>Get New Update Live</h3>
+            </div>
+            <div>
+                <hr>
+                <p>Newsletter</p>
+                <h4>Send Newsletters</h4>
+                <p>Get Best Payment Gateway To</p>
+                <p>Go Live Instantly.</p>
+            </div>
+            <div>
+                <hr>
+                <p>Feedback</p>
+                <h4>Get Feedback</h4>
+                 <p>Get Best Payment Gateway To</p>
+                <p>Go Live Instantly.</p>
+            </div>
+        </div>
+    </footer>
+      </section>
+  
+</body>
+<script src="hamburger.js"></script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    deleteDoc,
+    doc, updateDoc, serverTimestamp, getDoc
+  } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDewnlmrqgHffKSID_XtQRTc7aTRRDloic",
+    authDomain: "my-eventswhatsup.firebaseapp.com",
+    databaseURL: "https://my-eventswhatsup-default-rtdb.firebaseio.com",
+    projectId: "my-eventswhatsup",
+    storageBucket: "my-eventswhatsup.firebasestorage.app",
+    messagingSenderId: "82839194346",
+    appId: "1:82839194346:web:a4813a773ee5396dd26593",
+    measurementId: "G-5ZZ236N3BE"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  let db = getFirestore(app);
+  //const colRef = collection(db, 'events');
+  let auth = getAuth(app);
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    let userDiv = document.getElementById("user");
+    let signOutBtn = document.getElementById("signOutBtn");
+    let createEvent = document.getElementById("createEvent");
+    let eventsDiv = document.getElementById("events");
+    let eventArr = [];
+
+    onAuthStateChanged(auth, (currentUser) => {
+      userDiv.innerHTML = "";
+      if (currentUser) {
+        userDiv.innerHTML += "<p> Welcome Onboard!</p>"
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.log(error.message);
+      }
+    });
+
+    createEvent.addEventListener('click', async (e) => {
+      e.preventDefault();
+      let title = document.getElementById("title").value;
+      let location = document.getElementById("location").value;
+      let date = document.getElementById("date").value;
+      let time = document.getElementById("time").value;
+
+
+      if (!title || !location || !date || !time) {
+        alert("All fields are required");
+        return;
+      }
+      try {
+        let eventObj = await addDoc(collection(db, "events"), {
+          title,
+          location,
+          date,
+          time,
+          createdAt: serverTimestamp()
+
+        });
+        eventArr.push(eventObj);
+        alert("Event created successfully");
+      } catch (error) {
+        console.log(error.message);
+      }
+      listenForEvents();
+      listenForUsers();
+
+
+    });
+    function listenForEvents() {
+      onSnapshot(collection(db, "events"), (snapshot) => {
+        eventsDiv.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const event = docSnap.data();
+          eventsDiv.innerHTML += `
+        <div class="event">
+          <strong>${event.title}</strong><br>
+          Location: ${event.location}<br>
+          Date: ${event.date}<br>
+          Time: ${event.time}<br><br>
+
+          <button class="book" data-id="${docSnap.id}" style="background-color:green;">Book</button>
+          <button class="update" data-id="${docSnap.id}" style="background-color:gray;">Update</button>
+          <button class="delete" data-id="${docSnap.id}" style="background-color:red;" >Delete</button>
+        </div>
+      `;
+        });
+        attachEventHandlers();
+
+      });
+    };
+    let usersDiv = document.getElementById("usersDiv");
+    let time = "seconds";
+
+    function listenForUsers() {
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        usersDiv.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          displayUser(docSnap.data(), docSnap.id)
+
+        });
+
+      });
+    }
+    function displayUser(user, userId) {
+      usersDiv.innerHTML += `
+           <div>
+            <img src="${user.profilePictureUrl || 'default.png'}" width="40" border-radius: 3px>
+            <hr>
+       <p> <strong>${user.firstName} ${user.secondName}</strong></p>
+       <p> Username: ${user.username}</p>
+       <p> Email: ${user.email}</p>
+       <p> User ID: ${userId}</p>
+       <p> Created: ${new Date().toLocaleDateString()}</P>
+            </div>
+      `;
+      function updateUserProfilePic(profilePictureUrl) {
+        const imgElement = document.getElementById('user-profile-pic');
+        if (imgElement && user.profilePictureUrl) {
+          imgElement.src = user.profilePictureUrl;
+        }
+      }
+      updateUserProfilePic('path/to/user-picture.jpg');
+    }
+    eventsDiv.addEventListener('click', async (e) => {
+      const id = e.target.dataset.id;
+      if (!id) return;
+
+      if (e.target.classList.contains("delete")) {
+        await deleteDoc(doc(db, "events", id));
+        alert("Event deleted");
+      }
+
+      if (e.target.classList.contains("update")) {
+        const newLocation = prompt("Enter new location");
+        const newTime = prompt("Enter new time");
+        if (!newLocation || !newTime) return;
+
+        await updateDoc(doc(db, "events", id), {
+          location: newLocation,
+          time: newTime
+        });
+        alert("Event updated");
+      }
+
+      if (e.target.classList.contains("book")) {
+        const userName = prompt("Enter your name");
+        if (!userName) return;
+
+        await addDoc(collection(db, "events", id, "bookings"), {
+          userName,
+          bookedAt: serverTimestamp()
+        });
+        alert("Event booked successfully");
+      }
+      listenForEvents();
+      listenForUsers();
+
+    });
+
+    function attachEventHandlers() {
+      document.querySelectorAll(".delete").forEach((btn) => {
+        btn.onclick = async () => {
+          await deleteDoc(doc(db, "events", btn.dataset.id));
+        };
+      });
+
+      document.querySelectorAll(".update").forEach((btn) => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          console.log("Update event:", id);
+        };
+      });
+
+      document.querySelectorAll(".book").forEach((btn) => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          console.log("Book event:", id);
+        };
+      });
+    }
+  });
+</script>
+
+
+</html>

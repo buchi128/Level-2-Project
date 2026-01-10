@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="signup.css">
+</head>
+
+<body>
+  <section id="auth-section" class="active">
+    <div class="auth-container">
+      <div id="signup-mode">
+        <h3>🔑 Sign Up</h3>
+        <p class="subtitle">Create an account to start managing events.</p>
+        <input type="text" id="firstName" placeholder="First Name (Required)" required>
+        <input type="text" id="secondName" placeholder="Last Name (Required)" required>
+        <input type="email" id="signup-email" placeholder="Email Address" required>
+        <input type="text" id="signup-username" placeholder="Username (Required)" required>
+        <input type="password" id="signup-password" placeholder="Password (min 8 characters)" required>
+        <p style="font-size: smaller;">Choose strong password atleast one upperCase, one lowercase, number and special
+          character.</p>
+        <!-- <input type="file" id="signup-picture" accept="image/*"> -->
+        <button id="signup-btn" class="auth-action-btn">Sign Up</button>
+        <p class="switch-mode">Already have an account? <a href="" id="show-login">Login</a></p>
+
+      </div>
+      <div id="newEmail-mode" style="display: block;">
+      </div>
+      <div id="email-mode" style="display: none;">
+        <input type="email" id="email" placeholder="Enter Reset Password Email">
+        <button id="resetPasswordBtn">Reset Password</button>
+
+      </div>
+
+      <div id="login-mode" style="display: none;">
+        <h3>🔓 Login</h3>
+        <p class="subtitle">Welcome back! Sign in to continue.</p>
+        <input type="email" id="login-email" placeholder="Email Address" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <p style="font-size: smaller;">Your password must contain atleast one upperCase, one lowercase, number and
+          special character.</p>
+        <button id="login-btn" class="auth-action-btn">Log In</button>
+        <p class="switch-mode">Don't have an account? <a href="signup.html" id="show-signup">Sign Up</a></p>
+        <div style="display: none;">
+          <p class="switch-mode">Reset Email? <a href="" id="show-updateNewEmail">Update Email</a></p>
+        </div>
+        <p class="switch-mode">Reset Password? <a href="" id="show-updateResetPassword">Here</a></p>
+        <br><span>Or</span>
+        <div>
+          <br><button id="signInWithBtn"><img src="./images/google.png" alt="google-icon" id="icon"></button>
+        </div>
+      </div>
+
+      <p id="auth-error-message" class="error-message"></p>
+    </div>
+  </section>
+</body>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, getDoc, doc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut, signInWithEmailAndPassword, sendEmailVerification, signInWithPopup, GoogleAuthProvider, updateProfile, updateEmail, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDewnlmrqgHffKSID_XtQRTc7aTRRDloic",
+    authDomain: "my-eventswhatsup.firebaseapp.com",
+    projectId: "my-eventswhatsup",
+    storageBucket: "my-eventswhatsup.firebasestorage.app",
+    messagingSenderId: "82839194346",
+    appId: "1:82839194346:web:a4813a773ee5396dd26593",
+    measurementId: "G-5ZZ236N3BE"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  let user = auth.currentUser;
+
+  const firstName = document.getElementById('firstName');
+  const secondName = document.getElementById('secondName');
+  let signupEmailInput = document.getElementById('signup-email');
+  const signupUsernameInput = document.getElementById('signup-username');
+  let signupPasswordInput = document.getElementById('signup-password');
+  const signupBtn = document.getElementById('signup-btn');
+  let loginEmailInput = document.getElementById('login-email');
+  let loginPasswordInput = document.getElementById('login-password');
+  const loginBtn = document.getElementById('login-btn');
+  const authErrorMessage = document.getElementById('auth-error-message');
+  const showLoginLink = document.getElementById('show-login');
+  const showSignupLink = document.getElementById('show-signup');
+  const signupModeDiv = document.getElementById('signup-mode');
+  const loginModeDiv = document.getElementById('login-mode');
+  const newEmailModeDiv = document.getElementById("newEmail-mode");
+  const showUpdateEmailLink = document.getElementById("show-updateNewEmail");
+  const updateEmailBtn = document.getElementById("updateEmailBtn");
+  const email = document.getElementById("email");
+  const emailModeDiv = document.getElementById("email-mode");
+  const showResetPasswordLink = document.getElementById("show-updateResetPassword");
+  const newEmailInput = document.getElementById("newEmail");
+  const resetPasswordInput = document.getElementById("email");
+
+  showLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    signupModeDiv.style.display = 'none';
+    loginModeDiv.style.display = 'block';
+    authErrorMessage.textContent = '';
+  });
+
+  showSignupLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    signupModeDiv.style.display = 'block';
+    loginModeDiv.style.display = 'none';
+    authErrorMessage.textContent = '';
+  });
+  showUpdateEmailLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginModeDiv.style.display = 'none';
+    newEmailModeDiv.style.display = 'block';
+    authErrorMessage.textContent = '';
+  })
+  showResetPasswordLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginModeDiv.style.display = 'none';
+    emailModeDiv.style.display = 'block';
+    authErrorMessage.textContent = '';
+  });
+
+  async function sendVerificationEmailToCurrentUser() {
+    const user = auth.currentUser; // Get the current authenticated user
+
+    if (user) { // Check if a user is signed in
+      try {
+        let verifyEmail = await sendEmailVerification(user);
+        console.log("Email verification sent successfully!")
+        window.location.href = "dashboard.html"
+      } catch (error) {
+        console.error("Error sending email verification:", error);
+        alert("Could not send a verification email")
+      }
+    } else {
+      console.error("No user is currently signed in. Cannot send email verification.");
+      // Handle the case where no user is signed in, e.g., prompt for login
+      alert("try logging in")
+    }
+  }
+  const setUserLang = auth.useDeviceLanguage();
+
+  resetPasswordBtn.addEventListener("click", async () => {
+    const email = resetPasswordInput.value.trim();
+
+    if (!email) {
+      alert("Please enter your email address.");
+      return;
+    }
+    try {
+      let passwordReset = await sendPasswordResetEmail(auth, email);
+      alert("Password reset email has been sent. Please check your inbox.");
+    } catch (error) {
+      console.error(error.code, error.message);
+
+      if (error.code === "auth/user-not-found") {
+        alert("No account found with this email.");
+      } else if (error.code === "auth/network-request-failed") {
+        alert("It looks like you're offline or experiencing network issues. Please check your internet connection and try again.")
+      }
+      else {
+        alert("Unable to send password reset email. Try again later.");
+      }
+    }
+  });
+  signupBtn.addEventListener("click", async () => {
+    const fName = firstName.value.trim();
+    const sName = secondName.value.trim();
+    const email = signupEmailInput.value.trim();
+    const password = signupPasswordInput.value;
+    const username = signupUsernameInput.value.trim();
+
+    authErrorMessage.textContent = "";
+
+    if (!username) {
+      authErrorMessage.textContent = "Username is required.";
+      return;
+    }
+
+    if (!fName || !sName) {
+      authErrorMessage.textContent = "User details cannot be empty.";
+      return;
+    }
+
+    if (!email || !password) {
+      authErrorMessage.textContent = "Email and password are required.";
+      return;
+    }
+
+    if (!passWordRegex.test(password)) {
+      authErrorMessage.textContent =
+        "Password must be at least 8 characters and include uppercase, lowercase, number and special character.";
+      authErrorMessage.style.color = "red";
+    } else {
+      alert(`Welcome ${username}, signup successful!`);
+       window.location.href = "dashboard.html";
+    }
+   
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      const profilePictureUrl = "default-avatar.png";
+
+      let userDetails = await addDoc(collection(db, "users"), {
+        uid: user.uid,
+        firstName: fName,
+        secondName: sName,
+        email: email,
+        username: username,
+        profilePictureUrl: profilePictureUrl,
+        createdAt: serverTimestamp(),
+      });
+
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        authErrorMessage.textContent =
+          "Email already exists. Please use a different email.";
+      } else {
+        authErrorMessage.textContent = error.message;
+      }
+    }
+    listenForUsers();
+    validateSignup();
+    validateSignin();
+  });
+
+  let usersDiv = document.getElementById("usersDiv");
+
+  function listenForUsers() {
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      snapshot.preventDefault();
+      usersDiv.innerHTML = "";
+      console.log(usersDiv)
+
+      snapshot.forEach((docSnap) => {
+        const user = docSnap.data();
+        let div = document.createElement("div");
+        div.className = "user";
+        div.innerHTML += `
+        <img src="${user.profilePictureUrl || 'default.png'}" width="40">
+        <strong>${user.firstName} ${user.secondName}</strong><br>
+        Username: ${user.username}<br>
+        Email: ${user.email}<br>
+        User ID: ${docSnap.id}<br>
+        Created: ${new Date(user.createdAt.seconds * 1000).toLocaleDateString()}
+      `;
+
+        usersDiv.appendChild(div);
+        displayUserData()
+      });
+    });
+  }
+
+  const provider = new GoogleAuthProvider();
+
+  document.getElementById("signInWithBtn").addEventListener("click", async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      console.error("Login Error:", error.message);
+    }
+  });
+  loginBtn.addEventListener('click', async (userCredential) => {
+
+    const email = loginEmailInput.value;
+    const password = loginPasswordInput.value;
+
+    authErrorMessage.textContent = ''; // Clear previous errors
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+          const user = userCredential.user;
+      if (!email.trim() || !password.trim()) {
+        authErrorMessage.textContent = "Email and password cannot be empty.";
+        authErrorMessage.style.color = "red";
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        authErrorMessage.textContent = "Please enter a valid email address.";
+        authErrorMessage.style.color = "red";
+        return;
+      }
+
+      if (password.length < 8) {
+        authErrorMessage.textContent = "Password must be at least 8 characters.";
+        authErrorMessage.style.color = "red";
+        return;
+      }
+    } catch (error) {
+      console.error("Login error:", error.message);
+      authErrorMessage.textContent = `Login Failed: ${error.message.replace('Firebase:', '').trim()}`;
+    }
+    validateSignup();
+    validateSignin();
+  });
+  let emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  let passWordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+
+  let green = "green";
+  function validateSignup() {
+    if (
+      emailRegex.test(signupEmailInput.value) &&
+      passWordRegex.test(signupPasswordInput.value)
+    ) {
+      authErrorMessage.textContent = "Signup Successful";
+      authErrorMessage.style.color = "green";
+        window.location.href = "dashboard.html";
+
+    } else {
+      authErrorMessage.textContent = "Invalid Email or Password";
+      authErrorMessage.style.color = "red";
+    }
+  }
+
+  let red = "red";
+  function validateSignin() {
+    if (
+      emailRegex.test(loginEmailInput.value) &&
+      passWordRegex.test(loginPasswordInput.value)
+    ) {
+      authErrorMessage.textContent = "Login Successful";
+      authErrorMessage.style.color = "green";
+      window.location.href = "dashboard.html";
+    } else {
+      authErrorMessage.textContent = "Invalid Email or Password. Try Again.";
+      authErrorMessage.style.color = "red";
+    }
+  }
+  let userData;
+  async function displayUserData() {
+    if (!user) {
+      window.location.href = "signup.html";
+    }
+
+    const userDocRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userDocRef);
+
+    if (userSnap.exists()) {
+      userData = userSnap.data();
+
+      document.getElementById("welcomeName").textContent =
+        `Welcome, ${userData.firstName}`;
+    } else {
+      console.log("No user profile found");
+    }
+    document.getElementById("email").textContent = userData.email;
+  };
+
+</script>
+
+</html>

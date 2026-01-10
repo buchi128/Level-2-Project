@@ -1,0 +1,77 @@
+:root {
+    --primary: #4f46e5;
+    --danger: #ef4444;
+    --bg: #f8fafc;
+}
+
+body {
+    font-family: sans-serif;
+    background-color:black;
+    padding: 2rem;
+    color: #1e293b;
+}
+
+.app-container {
+    max-width: 900px;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#createEvent {
+    background: green;
+    color: black;
+    width: 100%;
+}
+#createEvent:hover{
+    background-color: rgb(255, 221, 0);
+}
+
+.event-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+}
+
+.delete-btn {
+    background: var(--danger);
+    color: white;
+    margin-left: 10px;
+}
+
+.edit-btn {
+    background: #e2e8f0;
+    color: #475569;
+}

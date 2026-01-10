@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="hamburger.css">
+    
+</head>
+<body>
+    <section id="body">
+        <header id="main-nav">
+      <div>M<span style="color: rgb(255, 221, 0); background-color: black; border-radius: 5px; ">Y</span><br><span style="color: rgb(255, 221, 0); background-color:black;border-radius: 5px; ">—</span>EVENTS</div>
+       <div id="navigation-menu" class="nav-menu"><ul>
+      <li><a href="#" id="events-link">Events ⋅</a></li>  
+       <li><a href="#" id="log-link">Products ⋅</a></li>  
+        <li> <a href="#" id="log-link">Pricing ⋅</a></li> 
+         <li><a href="#" id="log-link">Partners</a></li>   
+      </ul>
+        </div>
+        <nav>
+             <a href="signup.html" id="log-link">Login</a>
+            <button id="auth-button" class="event-btn"><a href="signup.html">Book Events — It's Free</a></button>
+            <button id="create-event-btn" style="display:none;">Create Event</button>
+        </nav>
+             <!-- Hamburger icon container -->
+    <div class="hamburger" id="hamburger-icon">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+    </header>
+
+    <main>
+        <section id="auth-section" class="active">
+            <div id="parent-of-first-second-container">
+             <div id="first-container">
+                <div>
+                <div><img src="./images/icon8 star.png" alt="5 stars" height="18px" width="18px"> 5 Stars<br>Read Our <a href="">Success Stories</a> </div>
+                <h1>Let's Host Lovely<br> Events</h1>
+            </div>
+            <div><p>Share Upcoming Events. Send Newsletters<br> & Community Updates</p></div><br><br>
+           <div id="book-event-container"><button id="auth-button" class="event-btn-2"><a href="signup.html" style="text-decoration: none;">Book Events — It's Free</a></button><p>Watch Demo↗</p></div>
+            </div>
+           <div id="second-container">
+            <img src="./images/couple at home.jpg" alt="loving-young-couple-smiling-at-home" id="home-img">
+           <div id="first-position-container">
+                <div id="vip-container"><p>Online</p><p style="border-radius: 35%; background-color:rgb(231,231,231);">VIP</p></div>
+               <div><h2>Team Party</h2></div>
+                <!-- <div><img src="" alt=""><img src="" alt=""><img src="" alt=""></div> -->
+                <div><p>Invited Only - Private</p></div>
+                <p>newTime</p>
+            </div>
+            <div  id="second-position-container">
+                <div>
+                <p>Location</p>
+                <!-- <img src="" alt=""> -->
+                <p>Las Vegas</p>
+                <!-- <img src="" alt=""> -->
+            </div>
+            <div>
+                <p>Park Avenue</p>
+                <!-- <img src="" alt=""> -->
+            </div>
+            </div>
+           </div>  
+           </div>
+                <footer>
+        <div class="footer-container">
+            <div><h3>Get New Update Live</h3>
+            </div>
+            <div>
+                <hr>
+                <p>Newsletter</p>
+                <h4>Send Newsletters</h4>
+                <p>Get Best Payment Gateway To</p>
+                <p>Go Live Instantly.</p>
+            </div>
+            <div>
+                <hr>
+                <p>Feedback</p>
+                <h4>Get Feedback</h4>
+                 <p>Get Best Payment Gateway To</p>
+                <p>Go Live Instantly.</p>
+            </div>
+        </div>
+    </footer>
+            </section>
+
+        <section id="events-section" style="display:none;">
+            <h2>Discover Events</h2>
+            <div id="ticketmaster-events-list"></div>
+        </section>
+
+        <section id="my-log-section" style="display:none;">
+            <h2>My Event Log (Booked & Created)</h2>
+            <div id="user-events-list"></div>
+        </section>
+    </main>
+    
+    </section>
+   
+</body>
+<script src="hamburger.js"></script>
+<script type="module" src = "app.js">
+</script>
+</html>
