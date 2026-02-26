@@ -141,7 +141,10 @@
     onAuthStateChanged(auth, (currentUser) => {
       userDiv.innerHTML = "";
       if (currentUser) {
-        userDiv.innerHTML += "<p> Welcome Onboard!</p>"
+        userDiv.innerHTML += "<p> Welcome Onboard!</p>";
+        // start listeners once a user is authenticated
+        listenForEvents();
+        listenForUsers();
       } else {
         window.location.href = "index.html";
       }
@@ -163,7 +166,6 @@
       let date = document.getElementById("date").value;
       let time = document.getElementById("time").value;
 
-
       if (!title || !location || !date || !time) {
         alert("All fields are required");
         return;
@@ -175,7 +177,6 @@
           date,
           time,
           createdAt: serverTimestamp()
-
         });
         eventArr.push(eventObj);
         alert("Event created successfully");
@@ -184,8 +185,6 @@
       }
       listenForEvents();
       listenForUsers();
-
-
     });
     function listenForEvents() {
       onSnapshot(collection(db, "events"), (snapshot) => {
@@ -206,34 +205,38 @@
       `;
         });
         attachEventHandlers();
-
       });
     };
+
+    // call listeners on initial load so users/events are shown immediately
+    listenForEvents();
+    listenForUsers();
     let usersDiv = document.getElementById("usersDiv");
-    let time = "seconds";
 
     function listenForUsers() {
       onSnapshot(collection(db, "users"), (snapshot) => {
         usersDiv.innerHTML = "";
         snapshot.forEach((docSnap) => {
-          displayUser(docSnap.data(), docSnap.id)
-
+          const user = docSnap.data();
+          const userId = docSnap.id;          
+          console.log(user);
+          usersDiv.innerHTML += `
+            <div class="user-card">
+              <img src="${user.profilePictureUrl || 'default.png'}" width="40" style="border-radius:3px;">
+              <hr>
+              <p><strong>${user.firstName || ''} ${user.secondName || ''}</strong></p>
+              <p>Username: ${user.username || ''}</p>
+              <p>Email: ${user.email || ''}</p>
+              <p>User ID: ${userId}</p>
+              <p>Created: ${user.createdAt ? user.createdAt.toDate().toLocaleDateString() : ''}</p>
+            </div>
+          `;
+          // optionally you could call displayUser(user, userId);
         });
-
       });
     }
     function displayUser(user, userId) {
-      usersDiv.innerHTML += `
-           <div>
-            <img src="${user.profilePictureUrl || 'default.png'}" width="40" border-radius: 3px>
-            <hr>
-       <p> <strong>${user.firstName} ${user.secondName}</strong></p>
-       <p> Username: ${user.username}</p>
-       <p> Email: ${user.email}</p>
-       <p> User ID: ${userId}</p>
-       <p> Created: ${new Date().toLocaleDateString()}</P>
-            </div>
-      `;
+    
       function updateUserProfilePic(profilePictureUrl) {
         const imgElement = document.getElementById('user-profile-pic');
         if (imgElement && user.profilePictureUrl) {

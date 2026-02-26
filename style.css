@@ -151,7 +151,7 @@ nav{
 }
 /* Sidebar */
 .sidebar {
-  background:var(--white);
+  background:white;
   padding: 20px;
   box-shadow: 2px 0 10px rgba(0,0,0,0.1);
 }
