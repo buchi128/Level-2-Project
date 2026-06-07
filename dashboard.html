@@ -82,7 +82,7 @@
             </div>
             <div>
                 <hr>
-                <p>Feedback</p>
+                <p>Feedback?</p>
                 <h4>Get Feedback</h4>
                  <p>Get Best Payment Gateway To</p>
                 <p>Go Live Instantly.</p>
@@ -260,15 +260,31 @@ function listenForEvents(eventsDiv) {
   });
 }
 
-function listenForUsers(usersDiv) {
-  return onSnapshot(collection(db, "users"), (snapshot) => {
+
+function listenForCurrentUserProfile(currentUser, usersDiv) {
+  const userRef = doc(db, "users", currentUser.uid);
+
+  return onSnapshot(userRef, (docSnap) => {
     usersDiv.innerHTML = "";
 
-    snapshot.forEach((docSnap) => {
-      const user = docSnap.data();
-      const userCard = createUserCard(docSnap.id, user);
-      usersDiv.appendChild(userCard);
-    });
+    if (!docSnap.exists()) {
+      usersDiv.innerHTML = "<p style='color: red;'>No profile found for this user.</p>";
+      return;
+    }
+
+    const user = docSnap.data();
+
+    usersDiv.innerHTML = `
+      <div class="user-card">
+        <img src="${user.profilePictureUrl || 'default.png'}" width="40" style="border-radius:3px;">
+        <hr>
+        <p><strong>${user.firstName || ''} ${user.secondName || ''}</strong></p>
+        <p>Username: ${user.username || ''}</p>
+        <p>Email: ${user.email || currentUser.email || ''}</p>
+        <p>User ID: ${currentUser.uid}</p>
+        <p>Created: ${user.createdAt ? user.createdAt.toDate().toLocaleDateString() : ''}</p>
+      </div>
+    `;
   });
 }
 
