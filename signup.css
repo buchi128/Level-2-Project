@@ -1,0 +1,64 @@
+body{
+    background: url("https://images.pexels.com/photos/14591832/pexels-photo-14591832.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.auth-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background: rgb(231,231,231);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+#icon:hover{
+     cursor: pointer;
+}
+
+.auth-container input[type="email"],
+.auth-container input[type="password"],
+.auth-container input[type="text"] {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+#signInWithBtn{
+    width: 90%;
+    padding: 5px 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.auth-action-btn {
+    background-color: rgb(255, 221, 0);
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 90%;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+ .event { border: 1px solid #ccc;
+          padding: 10px;
+         margin-top: 10px;
+         }
+
+.auth-action-btn:hover {
+    background-color: #388E3C; 
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+}
