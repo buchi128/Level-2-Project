@@ -102,7 +102,7 @@ import {
   addDoc,
   onSnapshot,
   deleteDoc,
-  doc,
+  doc, getDoc,
   updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
@@ -124,7 +124,7 @@ const auth = getAuth(app);
 let unsubscribeEvents = null;
 let unsubscribeUsers = null;
 
-// Global listener cleanup function
+
 function cleanUpListeners() {
   if (typeof unsubscribeEvents === "function") unsubscribeEvents();
   if (typeof unsubscribeUsers === "function") unsubscribeUsers();
@@ -145,35 +145,49 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-let isAuthInitializing = true;
-
 onAuthStateChanged(auth, (currentUser) => {
- 
-  userDiv.textContent = "";
-
-  if (!currentUser) {
-
-    if (!isAuthInitializing) {
-      cleanUpListeners();
-      window.location.href = "index.html";
-    } else {
-      userDiv.textContent = "Loading session...";
-    }
-    return;
-  }
-
-  isAuthInitializing = false; 
-  userDiv.textContent = "Welcome Onboard!";
-
-  if (!unsubscribeEvents) {
-    unsubscribeEvents = listenForEvents(eventsDiv);
-  }
-
-  if (!unsubscribeUsers) {
-    unsubscribeUsers = listenForCurrentUserProfile(currentUser, usersDiv);
+  if (currentUser) {
+    console.log("Authenticated user found:", currentUser.uid);
+    displayUserData(currentUser);
+  } else {
+   
+    window.location.href = "index.html"; 
   }
 });
 
+let userData;
+
+async function displayUserData(user) {
+  if (!user) return;
+
+  try {
+
+    const userDocRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userDocRef);
+
+    if (userSnap.exists()) {
+      userData = userSnap.data();
+      console.log("Retrieved user data:", userData);
+
+      
+      const welcomeElem = document.getElementById("welcomeName");
+      const emailElem = document.getElementById("email");
+      
+      if (welcomeElem) {
+        welcomeElem.textContent = `Welcome, ${userData.firstName || 'User'}`;
+      }
+      if (emailElem) {
+        emailElem.textContent = userData.email || user.email;
+      }
+    } else {
+      console.warn("No matching user profile document found in Firestore 'users' collection.");
+      const welcomeElem = document.getElementById("welcomeName");
+      if (welcomeElem) welcomeElem.textContent = `Welcome Onboard!`;
+    }
+  } catch (err) {
+    console.error("Error fetching user data from Firestore:", err);
+  }
+}
 
   signOutBtn.addEventListener("click", async () => {
     try {

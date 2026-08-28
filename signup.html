@@ -61,7 +61,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, getDoc, doc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, getDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
   import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut, signInWithEmailAndPassword, sendEmailVerification, signInWithPopup, GoogleAuthProvider, updateProfile, updateEmail, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -130,9 +130,9 @@
   });
 
   async function sendVerificationEmailToCurrentUser() {
-    const user = auth.currentUser; 
+    const user = auth.currentUser;
 
-    if (user) { 
+    if (user) {
       try {
         let verifyEmail = await sendEmailVerification(user);
         console.log("Email verification sent successfully!")
@@ -143,7 +143,7 @@
       }
     } else {
       console.error("No user is currently signed in. Cannot send email verification.");
-      
+
       alert("try logging in")
     }
   }
@@ -172,160 +172,160 @@
       }
     }
   });
- let emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-let passWordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+  let emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  let passWordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
 
 
 
-signupBtn.addEventListener("click", async (e) => {
-  e.preventDefault(); 
+  signupBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
 
-  const fName = firstName.value.trim();
-  const sName = secondName.value.trim();
-  const email = signupEmailInput.value.trim();
-  const password = signupPasswordInput.value;
-  const username = signupUsernameInput.value.trim();
+    const fName = firstName.value.trim();
+    const sName = secondName.value.trim();
+    const email = signupEmailInput.value.trim();
+    const password = signupPasswordInput.value;
+    const username = signupUsernameInput.value.trim();
 
-  authErrorMessage.textContent = "";
+    authErrorMessage.textContent = "";
 
-  if (!username) {
-    authErrorMessage.textContent = "Username is required.";
-    authErrorMessage.style.color = "red";
-    return;
-  }
-
-  if (!fName || !sName) {
-    authErrorMessage.textContent = "User details cannot be empty.";
-    authErrorMessage.style.color = "red";
-    return;
-  }
-
-  if (!email || !password) {
-    authErrorMessage.textContent = "Email and password are required.";
-    authErrorMessage.style.color = "red";
-    return;
-  }
-
-  if (!passWordRegex.test(password)) {
-    authErrorMessage.textContent = "Password must be at least 8 characters and include uppercase, lowercase, number and special character.";
-    authErrorMessage.style.color = "red";
-    return;
-  }
-
-  try {
-   
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    const profilePictureUrl = "default-avatar.png";
-
-    
-    await addDoc(collection(db, "users"), {
-      uid: user.uid,
-      firstName: fName,
-      secondName: sName,
-      email: email,
-      username: username,
-      profilePictureUrl: profilePictureUrl,
-      createdAt: serverTimestamp(),
-    });
-
-   
-    listenForUsers();
-    
-   
-    alert(`Welcome ${username}, signup successful!`);
-    window.location.href = "dashboard.html";
-
-  } catch (error) {
-    console.error("Signup error detail:", error.code, error.message);
-    authErrorMessage.style.color = "red";
-    
-    if (error.code === "auth/email-already-in-use") {
-      authErrorMessage.textContent = "Email already exists. Please use a different email.";
-    } else if (error.code === "auth/invalid-email") {
-      authErrorMessage.textContent = "The email address format is invalid.";
-    } else if (error.code === "auth/weak-password") {
-      authErrorMessage.textContent = "The password is too weak according to Firebase.";
-    } else {
-      authErrorMessage.textContent = `Signup Failed: ${error.message.replace('Firebase:', '').trim()}`;
+    if (!username) {
+      authErrorMessage.textContent = "Username is required.";
+      authErrorMessage.style.color = "red";
+      return;
     }
-  }
-});
 
-
-loginBtn.addEventListener('click', async (e) => {
-  e.preventDefault(); // 1. Prevent form submit reloads
-
-
-  authErrorMessage.textContent = ''; 
-  const email = loginEmailInput.value.trim();
-  const password = loginPasswordInput.value;
-
- 
-  if (!email || !password) {
-    authErrorMessage.textContent = "Email and password cannot be empty.";
-    authErrorMessage.style.color = "red";
-    return;
-  }
-
-  if (!emailRegex.test(email)) {
-    authErrorMessage.textContent = "Please enter a valid email address.";
-    authErrorMessage.style.color = "red";
-    return;
-  }
-
-  try {
-    
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
-    authErrorMessage.textContent = "Login Successful!";
-    authErrorMessage.style.color = "green";
-    
-
-    window.location.href = "dashboard.html";
-
-  } catch (error) {
-    
-    console.error("Login failure details:", error.code, error.message);
-    
-    authErrorMessage.style.color = "red";
-    if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
-      authErrorMessage.textContent = "Incorrect email or password. Please try again.";
-    } else {
-      authErrorMessage.textContent = `Login Failed: ${error.message.replace('Firebase:', '').trim()}`;
+    if (!fName || !sName) {
+      authErrorMessage.textContent = "User details cannot be empty.";
+      authErrorMessage.style.color = "red";
+      return;
     }
-  }
-});
 
-const provider = new GoogleAuthProvider();
-document.getElementById("signInWithBtn").addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, provider);
-    window.location.href = "dashboard.html";
-  } catch (error) {
-    console.error("Login Error:", error.message);
-  }
-});
+    if (!email || !password) {
+      authErrorMessage.textContent = "Email and password are required.";
+      authErrorMessage.style.color = "red";
+      return;
+    }
+
+    if (!passWordRegex.test(password)) {
+      authErrorMessage.textContent = "Password must be at least 8 characters and include uppercase, lowercase, number and special character.";
+      authErrorMessage.style.color = "red";
+      return;
+    }
+
+    try {
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const profilePictureUrl = "default-avatar.png";
 
 
-let usersDiv = document.getElementById("usersDiv");
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        firstName: fName,
+        secondName: sName,
+        email: email,
+        username: username,
+        profilePictureUrl: profilePictureUrl,
+        createdAt: serverTimestamp(),
+      });
 
-function listenForUsers() {
-  if (!usersDiv) return;
-  onSnapshot(collection(db, "users"), (snapshot) => {
-    usersDiv.innerHTML = "";
 
-    snapshot.forEach((docSnap) => {
-      const user = docSnap.data();
-      let div = document.createElement("div");
-      div.className = "user";
-      
-      let dateString = "N/A";
-      if (user.createdAt && user.createdAt.seconds) {
-         dateString = new Date(user.createdAt.seconds * 1000).toLocaleDateString();
+      listenForUsers();
+
+
+      alert(`Welcome ${username}, signup successful!`);
+      window.location.href = "dashboard.html";
+
+    } catch (error) {
+      console.error("Signup error detail:", error.code, error.message);
+      authErrorMessage.style.color = "red";
+
+      if (error.code === "auth/email-already-in-use") {
+        authErrorMessage.textContent = "Email already exists. Please use a different email.";
+      } else if (error.code === "auth/invalid-email") {
+        authErrorMessage.textContent = "The email address format is invalid.";
+      } else if (error.code === "auth/weak-password") {
+        authErrorMessage.textContent = "The password is too weak according to Firebase.";
+      } else {
+        authErrorMessage.textContent = `Signup Failed: ${error.message.replace('Firebase:', '').trim()}`;
       }
+    }
+  });
 
-      div.innerHTML = `
+
+  loginBtn.addEventListener('click', async (e) => {
+    e.preventDefault(); // 1. Prevent form submit reloads
+
+
+    authErrorMessage.textContent = '';
+    const email = loginEmailInput.value.trim();
+    const password = loginPasswordInput.value;
+
+
+    if (!email || !password) {
+      authErrorMessage.textContent = "Email and password cannot be empty.";
+      authErrorMessage.style.color = "red";
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      authErrorMessage.textContent = "Please enter a valid email address.";
+      authErrorMessage.style.color = "red";
+      return;
+    }
+
+    try {
+
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      authErrorMessage.textContent = "Login Successful!";
+      authErrorMessage.style.color = "green";
+
+
+      window.location.href = "dashboard.html";
+
+    } catch (error) {
+
+      console.error("Login failure details:", error.code, error.message);
+
+      authErrorMessage.style.color = "red";
+      if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
+        authErrorMessage.textContent = "Incorrect email or password. Please try again.";
+      } else {
+        authErrorMessage.textContent = `Login Failed: ${error.message.replace('Firebase:', '').trim()}`;
+      }
+    }
+  });
+
+  const provider = new GoogleAuthProvider();
+  document.getElementById("signInWithBtn").addEventListener("click", async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      console.error("Login Error:", error.message);
+    }
+  });
+
+
+  let usersDiv = document.getElementById("usersDiv");
+
+  function listenForUsers() {
+    if (!usersDiv) return;
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      usersDiv.innerHTML = "";
+
+      snapshot.forEach((docSnap) => {
+        const user = docSnap.data();
+        let div = document.createElement("div");
+        div.className = "user";
+
+        let dateString = "N/A";
+        if (user.createdAt && user.createdAt.seconds) {
+          dateString = new Date(user.createdAt.seconds * 1000).toLocaleDateString();
+        }
+
+        div.innerHTML = `
         <img src="${user.profilePictureUrl || 'default.png'}" width="40">
         <strong>${user.firstName} ${user.secondName}</strong><br>
         Username: ${user.username}<br>
@@ -333,37 +333,37 @@ function listenForUsers() {
         User ID: ${docSnap.id}<br>
         Created: ${dateString}
       `;
-      usersDiv.appendChild(div);
+        usersDiv.appendChild(div);
+      });
     });
-  });
-}
-
-
-let userData;
-async function displayUserData(user) {
-  if (!user) {
-    window.location.href = "signup.html";
-    return;
   }
 
-  try {
-    const userDocRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userDocRef);
 
-    if (userSnap.exists()) {
-      userData = userSnap.data();
-      const welcomeElem = document.getElementById("welcomeName");
-      const emailElem = document.getElementById("email");
-      
-      if (welcomeElem) welcomeElem.textContent = `Welcome, ${userData.firstName}`;
-      if (emailElem) emailElem.textContent = userData.email;
-    } else {
-      console.log("No user profile found");
+  let userData;
+  async function displayUserData(user) {
+    if (!user) {
+      window.location.href = "signup.html";
+      return;
     }
-  } catch (err) {
-    console.error("Error fetching user data:", err);
+
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userDocRef);
+
+      if (userSnap.exists()) {
+        userData = userSnap.data();
+        const welcomeElem = document.getElementById("welcomeName");
+        const emailElem = document.getElementById("email");
+
+        if (welcomeElem) welcomeElem.textContent = `Welcome, ${userData.firstName}`;
+        if (emailElem) emailElem.textContent = userData.email;
+      } else {
+        console.log("No user profile found");
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
   }
-}
 
 
 </script>
