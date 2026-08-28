@@ -144,25 +144,36 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  onAuthStateChanged(auth, (currentUser) => {
-    userDiv.textContent = "";
 
-    if (!currentUser) {
+let isAuthInitializing = true;
+
+onAuthStateChanged(auth, (currentUser) => {
+ 
+  userDiv.textContent = "";
+
+  if (!currentUser) {
+
+    if (!isAuthInitializing) {
       cleanUpListeners();
       window.location.href = "index.html";
-      return;
+    } else {
+      userDiv.textContent = "Loading session...";
     }
+    return;
+  }
 
-    userDiv.textContent = "Welcome Onboard!";
+  isAuthInitializing = false; 
+  userDiv.textContent = "Welcome Onboard!";
 
-    if (!unsubscribeEvents) {
-      unsubscribeEvents = listenForEvents(eventsDiv);
-    }
+  if (!unsubscribeEvents) {
+    unsubscribeEvents = listenForEvents(eventsDiv);
+  }
 
-    if (!unsubscribeUsers) {
-      unsubscribeUsers = listenForCurrentUserProfile(currentUser, usersDiv);
-    }
-  });
+  if (!unsubscribeUsers) {
+    unsubscribeUsers = listenForCurrentUserProfile(currentUser, usersDiv);
+  }
+});
+
 
   signOutBtn.addEventListener("click", async () => {
     try {
