@@ -243,14 +243,16 @@ signupBtn.addEventListener("click", async (e) => {
 });
 
 
-loginBtn.addEventListener('click', async (e) => {
-  e.preventDefault(); 
 
+loginBtn.addEventListener('click', async (e) => {
+  e.preventDefault(); // 1. Prevent form submit reloads
+
+
+  authErrorMessage.textContent = ''; 
   const email = loginEmailInput.value.trim();
   const password = loginPasswordInput.value;
 
-  authErrorMessage.textContent = ''; 
-
+ 
   if (!email || !password) {
     authErrorMessage.textContent = "Email and password cannot be empty.";
     authErrorMessage.style.color = "red";
@@ -263,28 +265,28 @@ loginBtn.addEventListener('click', async (e) => {
     return;
   }
 
-  if (password.length < 8) {
-    authErrorMessage.textContent = "Password must be at least 8 characters.";
-    authErrorMessage.style.color = "red";
-    return;
-  }
-
   try {
     
-    await signInWithEmailAndPassword(auth, email, password);
-    
-    authErrorMessage.textContent = "Login Successful";
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+    authErrorMessage.textContent = "Login Successful!";
     authErrorMessage.style.color = "green";
     
-    
+
     window.location.href = "dashboard.html";
+
   } catch (error) {
-    console.error("Login error:", error.message);
-    authErrorMessage.textContent = `Login Failed: ${error.message.replace('Firebase:', '').trim()}`;
+    
+    console.error("Login failure details:", error.code, error.message);
+    
     authErrorMessage.style.color = "red";
+    if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
+      authErrorMessage.textContent = "Incorrect email or password. Please try again.";
+    } else {
+      authErrorMessage.textContent = `Login Failed: ${error.message.replace('Firebase:', '').trim()}`;
+    }
   }
 });
-
 
 const provider = new GoogleAuthProvider();
 document.getElementById("signInWithBtn").addEventListener("click", async () => {
