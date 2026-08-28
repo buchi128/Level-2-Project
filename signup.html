@@ -176,6 +176,7 @@
 let passWordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
 
 
+
 signupBtn.addEventListener("click", async (e) => {
   e.preventDefault(); 
 
@@ -189,16 +190,19 @@ signupBtn.addEventListener("click", async (e) => {
 
   if (!username) {
     authErrorMessage.textContent = "Username is required.";
+    authErrorMessage.style.color = "red";
     return;
   }
 
   if (!fName || !sName) {
     authErrorMessage.textContent = "User details cannot be empty.";
+    authErrorMessage.style.color = "red";
     return;
   }
 
   if (!email || !password) {
     authErrorMessage.textContent = "Email and password are required.";
+    authErrorMessage.style.color = "red";
     return;
   }
 
@@ -209,12 +213,12 @@ signupBtn.addEventListener("click", async (e) => {
   }
 
   try {
-    
+   
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     const profilePictureUrl = "default-avatar.png";
 
-  
+    
     await addDoc(collection(db, "users"), {
       uid: user.uid,
       firstName: fName,
@@ -225,23 +229,28 @@ signupBtn.addEventListener("click", async (e) => {
       createdAt: serverTimestamp(),
     });
 
-    
+   
     listenForUsers();
     
+   
     alert(`Welcome ${username}, signup successful!`);
-  
     window.location.href = "dashboard.html";
 
   } catch (error) {
+    console.error("Signup error detail:", error.code, error.message);
+    authErrorMessage.style.color = "red";
+    
     if (error.code === "auth/email-already-in-use") {
       authErrorMessage.textContent = "Email already exists. Please use a different email.";
+    } else if (error.code === "auth/invalid-email") {
+      authErrorMessage.textContent = "The email address format is invalid.";
+    } else if (error.code === "auth/weak-password") {
+      authErrorMessage.textContent = "The password is too weak according to Firebase.";
     } else {
-      authErrorMessage.textContent = error.message;
+      authErrorMessage.textContent = `Signup Failed: ${error.message.replace('Firebase:', '').trim()}`;
     }
-    authErrorMessage.style.color = "red";
   }
 });
-
 
 
 loginBtn.addEventListener('click', async (e) => {
