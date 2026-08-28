@@ -161,31 +161,37 @@ async function displayUserData(user) {
   if (!user) return;
 
   try {
-
     const userDocRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userDocRef);
+
+    
+    const profileContainer = document.getElementById("user");
 
     if (userSnap.exists()) {
       userData = userSnap.data();
       console.log("Retrieved user data:", userData);
 
-      
-      const welcomeElem = document.getElementById("welcomeName");
-      const emailElem = document.getElementById("email");
-      
-      if (welcomeElem) {
-        welcomeElem.textContent = `Welcome, ${userData.firstName || 'User'}`;
-      }
-      if (emailElem) {
-        emailElem.textContent = userData.email || user.email;
+      if (profileContainer) {
+
+        profileContainer.innerHTML = `
+          <h3>Profile</h3>
+          <div style="margin-top: 10px; font-size: 0.9rem;">
+            <p><strong>Name:</strong> ${userData.firstName || 'User'}</p>
+            <p style="word-break: break-all; color: gray;">${userData.email || user.email}</p>
+          </div>
+        `;
       }
     } else {
-      console.warn("No matching user profile document found in Firestore 'users' collection.");
-      const welcomeElem = document.getElementById("welcomeName");
-      if (welcomeElem) welcomeElem.textContent = `Welcome Onboard!`;
+      console.warn("No user profile found in Firestore.");
+      if (profileContainer) {
+        profileContainer.innerHTML = `
+          <h3>Profile</h3>
+          <p style="font-size: 0.9rem; color: gray;">${user.email}</p>
+        `;
+      }
     }
   } catch (err) {
-    console.error("Error fetching user data from Firestore:", err);
+    console.error("Error fetching user data:", err);
   }
 }
 
