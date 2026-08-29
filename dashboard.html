@@ -144,56 +144,58 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+let unsubscribeProfile = null;
 
 onAuthStateChanged(auth, (currentUser) => {
+  
+  if (unsubscribeProfile) {
+    unsubscribeProfile();
+    unsubscribeProfile = null;
+  }
+
   if (currentUser) {
-    console.log("Authenticated user found:", currentUser.uid);
-    displayUserData(currentUser);
+    console.log("Logged in user identity verified:", currentUser.uid);
+    
+    const userDocRef = doc(db, "users", currentUser.uid);
+    
+    unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
+      const profileContainer = document.getElementById("user");
+      
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        console.log("Showing dynamic current user details:", userData);
+
+        const avatarImg = userData.profilePictureUrl === "default-avatar.png" 
+          ? "https://ui-avatars.com" + encodeURIComponent(userData.firstName)
+          : userData.profilePictureUrl;
+
+        if (profileContainer) {
+          profileContainer.innerHTML = `
+            <h3>Profile</h3>
+            <div style="margin-top: 10px; font-size: 0.9rem;">
+              <img src="${avatarImg}" width="40" style="border-radius: 50%; vertical-align: middle; margin-bottom: 5px;">
+              <p><strong>Name:</strong> ${userData.firstName} ${userData.secondName}</p>
+              <p style="word-break: break-all; color: gray;">${userData.email}</p>
+            </div>
+          `;
+        }
+      } else {
+        console.warn("No Firestore profile exists for this active UID yet.");
+        
+        if (profileContainer) {
+          profileContainer.innerHTML = `
+            <h3>Profile</h3>
+            <p style="font-size: 0.9rem; color: gray;">${currentUser.email}</p>
+          `;
+        }
+      }
+    });
+
   } else {
    
-    window.location.href = "index.html"; 
+    window.location.href = "index.html";
   }
 });
-
-let userData;
-
-async function displayUserData(user) {
-  if (!user) return;
-
-  try {
-    const userDocRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userDocRef);
-
-    
-    const profileContainer = document.getElementById("user");
-
-    if (userSnap.exists()) {
-      userData = userSnap.data();
-      console.log("Retrieved user data:", userData);
-
-      if (profileContainer) {
-
-        profileContainer.innerHTML = `
-          <h3>Profile</h3>
-          <div style="margin-top: 10px; font-size: 0.9rem;">
-            <p><strong>Name:</strong> ${userData.firstName || 'User'}</p>
-            <p style="word-break: break-all; color: gray;">${userData.email || user.email}</p>
-          </div>
-        `;
-      }
-    } else {
-      console.warn("No user profile found in Firestore.");
-      if (profileContainer) {
-        profileContainer.innerHTML = `
-          <h3>Profile</h3>
-          <p style="font-size: 0.9rem; color: gray;">${user.email}</p>
-        `;
-      }
-    }
-  } catch (err) {
-    console.error("Error fetching user data:", err);
-  }
-}
 
   signOutBtn.addEventListener("click", async () => {
     try {
