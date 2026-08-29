@@ -121,13 +121,17 @@ getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// Global listener tracking to avoid leakage
+let unsubscribeProfile = null;
 let unsubscribeEvents = null;
 let unsubscribeUsers = null;
 
-
 function cleanUpListeners() {
+  if (typeof unsubscribeProfile === "function") unsubscribeProfile();
   if (typeof unsubscribeEvents === "function") unsubscribeEvents();
   if (typeof unsubscribeUsers === "function") unsubscribeUsers();
+  
+  unsubscribeProfile = null;
   unsubscribeEvents = null;
   unsubscribeUsers = null;
 }
@@ -144,33 +148,28 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-let unsubscribeProfile = null;
-
-onAuthStateChanged(auth, (currentUser) => {
-  
-  if (unsubscribeProfile) {
-    unsubscribeProfile();
-    unsubscribeProfile = null;
-  }
-
-  if (currentUser) {
-    console.log("Logged in user identity verified:", currentUser.uid);
-    
-    const userDocRef = doc(db, "users", currentUser.uid);
-    
-    unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
-      const profileContainer = document.getElementById("user");
+ 
+  onAuthStateChanged(auth, (currentUser) => {
+    if (currentUser) {
+      console.log("Logged in user identity verified:", currentUser.uid);
       
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        console.log("Showing dynamic current user details:", userData);
+      
+      if (unsubscribeProfile) unsubscribeProfile();
 
-        const avatarImg = userData.profilePictureUrl === "default-avatar.png" 
-          ? "https://ui-avatars.com" + encodeURIComponent(userData.firstName)
-          : userData.profilePictureUrl;
+      
+      const userDocRef = doc(db, "users", currentUser.uid);
+      unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          console.log("Showing dynamic current user details:", userData);
 
-        if (profileContainer) {
-          profileContainer.innerHTML = `
+          
+          let avatarImg = "https://ui-avatars.com" + encodeURIComponent(userData.firstName || "User");
+          if (userData.profilePictureUrl && userData.profilePictureUrl !== "default-avatar.png") {
+            avatarImg = userData.profilePictureUrl;
+          }
+
+          userDiv.innerHTML = `
             <h3>Profile</h3>
             <div style="margin-top: 10px; font-size: 0.9rem;">
               <img src="${avatarImg}" width="40" style="border-radius: 50%; vertical-align: middle; margin-bottom: 5px;">
@@ -178,26 +177,32 @@ onAuthStateChanged(auth, (currentUser) => {
               <p style="word-break: break-all; color: gray;">${userData.email}</p>
             </div>
           `;
-        }
-      } else {
-        console.warn("No Firestore profile exists for this active UID yet.");
-        
-        if (profileContainer) {
-          profileContainer.innerHTML = `
+        } else {
+          console.warn("No Firestore profile exists for this active UID yet.");
+          userDiv.innerHTML = `
             <h3>Profile</h3>
             <p style="font-size: 0.9rem; color: gray;">${currentUser.email}</p>
           `;
         }
+      });
+
+     
+      if (!unsubscribeEvents) {
+        unsubscribeEvents = listenForEvents(eventsDiv);
       }
-    });
+      if (!unsubscribeUsers) {
+        unsubscribeUsers = listenForCurrentUserProfile(currentUser, usersDiv);
+      }
 
-  } else {
-   
-    window.location.href = "index.html";
-  }
-});
+    } else {
+      cleanUpListeners();
+      window.location.href = "index.html";
+    }
+  });
 
-  signOutBtn.addEventListener("click", async () => {
+  // Handle User Logouts
+  signOutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
     try {
       cleanUpListeners();
       await signOut(auth);
@@ -208,6 +213,7 @@ onAuthStateChanged(auth, (currentUser) => {
     }
   });
 
+ 
   createEventBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -230,11 +236,18 @@ onAuthStateChanged(auth, (currentUser) => {
         createdAt: serverTimestamp()
       });
       alert("Event created successfully");
+      
+     
+      document.getElementById("title").value = "";
+      document.getElementById("location").value = "";
+      document.getElementById("date").value = "";
+      document.getElementById("time").value = "";
     } catch (error) {
       console.error("Error creating event:", error);
       alert("Failed to create event.");
     }
   });
+
 
   eventsDiv.addEventListener("click", async (e) => {
     const button = e.target.closest("button");
@@ -274,10 +287,11 @@ onAuthStateChanged(auth, (currentUser) => {
       }
     } catch (error) {
       console.error("Action execution failed:", error);
-      alert("Operation failed. Ensure permissions match database Firestore security rules.");
+      alert("Operation failed. Verify database rules configuration.");
     }
   });
 });
+
 
 function listenForEvents(eventsDiv) {
   return onSnapshot(collection(db, "events"), (snapshot) => {
@@ -335,7 +349,13 @@ function createUserCard(userId, user, fallbackEmail = "") {
   wrapper.className = "user-card";
 
   const img = document.createElement("img");
-  img.src = escapeHtml(user.profilePictureUrl || "default.png");
+  
+  
+  let safeSrc = "https://ui-avatars.com" + encodeURIComponent(user.firstName || "User");
+  if (user.profilePictureUrl && user.profilePictureUrl !== "default-avatar.png") {
+    safeSrc = user.profilePictureUrl;
+  }
+  img.src = escapeHtml(safeSrc);
   img.width = 40;
   img.style.borderRadius = "3px";
 
@@ -375,7 +395,6 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#x27;");
 }
-
 </script>
 
 
