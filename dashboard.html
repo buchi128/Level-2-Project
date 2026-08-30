@@ -4,115 +4,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Let's Create Unforgetable Events</title>
+  <title>Let's Create Unforgettable Events</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="renewed.css">
   <link rel="stylesheet" href="hamburger.css">
-
 </head>
 
 <body>
   <section id="body">
     <header id="main-nav">
-       <div>M<span style="color: rgb(255, 221, 0); background-color: black; border-radius: 5px; ">Y</span><br><span style="color: rgb(255, 221, 0); background-color:black;border-radius: 5px; ">—</span>EVENTS</div>
-     <div id="navigation-menu" class="nav-menu"><ul>
-      <li><a href="#" id="events-link">Events ⋅</a></li>  
-       <li><a href="#" id="log-link">Products ⋅</a></li>  
-        <li> <a href="#" id="log-link">Pricing ⋅</a></li> 
-         <li><a href="#" id="log-link">Partners</a></li>   
-      </ul>
-        </div>
+      <div>M<span style="color: rgb(255, 221, 0); background-color: black; border-radius: 5px;">Y</span><br><span style="color: rgb(255, 221, 0); background-color:black;border-radius: 5px;">—</span>EVENTS</div>
+      <div id="navigation-menu" class="nav-menu">
+        <ul>
+          <li><a href="#" id="events-link">Events ⋅</a></li>  
+          <li><a href="#" class="log-link">Products ⋅</a></li>  
+          <li><a href="#" class="log-link">Pricing ⋅</a></li> 
+          <li><a href="#" class="log-link">Partners</a></li>   
+        </ul>
+      </div>
       <nav>
         <a href="#" id="signOutBtn">Logout</a>
-        <button id="auth-button" class="event-btn"><a href="#">Book Events — It's Free!</a></button>
+        <a href="#" id="auth-button" class="event-btn">Book Events — It's Free!</a>
       </nav>
-         <!-- Hamburger icon container -->
-    <div class="hamburger" id="hamburger-icon">
+      <!-- Hamburger icon container -->
+      <div class="hamburger" id="hamburger-icon">
         <span class="bar"></span>
         <span class="bar"></span>
         <span class="bar"></span>
-    </div>
+      </div>
     </header>
-    <main class="dashboard">   
-         <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="profile" id="user">
-      <h3>Profile</h3>
-    </div>
-    <div id="usersDiv"></div>
-    <a href="index.html" class="logout-btn">Logout</a>
-  </aside>
-          <!-- Main Content -->
-      <section class="content">
 
+    <main class="dashboard">   
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="profile" id="user"></div>
+        <a href="index.html" class="logout-btn">Logout</a>
+      </aside>
+
+      <!-- Main Content -->
+      <section class="content">
         <!-- Header -->
-         <div id="event-box">
-          <h4>Unforgetable EventHub Manager</h4>
+        <div id="event-box">
+          <h4>Unforgettable EventHub Manager</h4>
           <p>Streamlined Event Booking</p>
         </div>
-           <!-- Event Form -->
+        <!-- Event Form -->
         <form action="" class="form-container">
-          <input id="title" placeholder="Event Title" />
-          <input id="location" placeholder="Location" />
-          <input type="date" id="date" />
-          <input type="time" id="time" />
-          <button id="createEvent">Create Event</button>
+          <input id="title" placeholder="Event Title" required />
+          <input id="location" placeholder="Location" required />
+          <input type="date" id="date" required />
+          <input type="time" id="time" required />
+          <button id="createEvent" type="submit">Create Event</button>
         </form>
 
         <!-- Event Log -->
         <div id="event-log">
-          <h4 style="background-color:  rgb(255, 221, 0); margin: auto; padding: 5px;">Event Log</h4>
+          <h4 style="background-color: rgb(255, 221, 0); margin: auto; padding: 5px;">Event Log</h4>
           <hr>
           <div id="events"></div>
         </div>
-        <div id="eventsDiv"></div>
-        </div>
-       </Section>
-         </main>
-                 <footer>
-        <div class="footer-container">
-            <div><h3>Get New Update Live</h3>
-            </div>
-            <div>
-                <hr>
-                <p>Newsletter</p>
-                <h4>Send Newsletters</h4>
-                <p>Get Best Payment Gateway To</p>
-                <p>Go Live Instantly.</p>
-            </div>
-            <div>
-                <hr>
-                <p>Feedback?</p>
-                <h4>Get Feedback</h4>
-                 <p>Get Best Payment Gateway To</p>
-                <p>Go Live Instantly.</p>
-            </div>
-        </div>
-    </footer>
       </section>
-  
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <div><h3>Get New Update Live</h3></div>
+        <div>
+          <hr>
+          <p>Newsletter</p>
+          <h4>Send Newsletters</h4>
+          <p>Get Best Payment Gateway To</p>
+          <p>Go Live Instantly.</p>
+        </div>
+        <div>
+          <hr>
+          <p>Feedback?</p>
+          <h4>Get Feedback</h4>
+          <p>Get Best Payment Gateway To</p>
+          <p>Go Live Instantly.</p>
+        </div>
+      </div>
+    </footer>
+  </section>
 </body>
 <script src="hamburger.js"></script>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+import { initializeApp } from "https://gstatic.com";
+import { getAnalytics } from "https://gstatic.com";
 import {
   getFirestore,
   collection,
   addDoc,
   onSnapshot,
   deleteDoc,
-  doc, getDoc,
+  doc,
   updateDoc,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+} from "https://gstatic.com";
 import {
   getAuth,
   onAuthStateChanged,
   signOut
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+} from "https://gstatic.com";
 
-// Clean import from your dedicated configurations file
+
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
@@ -121,44 +116,39 @@ getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Global listener tracking to avoid leakage
+//I want to avoid memory leakage here
 let unsubscribeProfile = null;
 let unsubscribeEvents = null;
-let unsubscribeUsers = null;
 
 function cleanUpListeners() {
   if (typeof unsubscribeProfile === "function") unsubscribeProfile();
   if (typeof unsubscribeEvents === "function") unsubscribeEvents();
-  if (typeof unsubscribeUsers === "function") unsubscribeUsers();
   
   unsubscribeProfile = null;
   unsubscribeEvents = null;
-  unsubscribeUsers = null;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const userDiv = document.getElementById("user");
-  const signOutBtn = document.getElementById("signOutBtn");
-  const createEventBtn = document.getElementById("createEvent");
-  const eventsDiv = document.getElementById("events");
-  const usersDiv = document.getElementById("usersDiv");
 
-  if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv || !usersDiv) {
-    console.error("Initialization Failed: Missing required DOM elements.");
-    return;
-  }
+const userDiv = document.getElementById("user");
+const signOutBtn = document.getElementById("signOutBtn");
+const createEventBtn = document.getElementById("createEvent");
+const eventsDiv = document.getElementById("events");
 
- 
+if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv) {
+  console.error("Initialization Failed: Missing required DOM elements.");
+} else {
+  
+  
   onAuthStateChanged(auth, (currentUser) => {
     if (currentUser) {
       console.log("Logged in user identity verified:", currentUser.uid);
       
-      
       if (unsubscribeProfile) unsubscribeProfile();
 
-      
       const userDocRef = doc(db, "users", currentUser.uid);
       unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
+        userDiv.innerHTML = "";
+
         if (docSnap.exists()) {
           const userData = docSnap.data();
           console.log("Showing dynamic current user details:", userData);
@@ -169,29 +159,32 @@ document.addEventListener("DOMContentLoaded", () => {
             avatarImg = userData.profilePictureUrl;
           }
 
+          const createdDate = userData.createdAt && typeof userData.createdAt.toDate === "function"
+            ? userData.createdAt.toDate().toLocaleDateString()
+            : "N/A";
+
           userDiv.innerHTML = `
             <h3>Profile</h3>
             <div style="margin-top: 10px; font-size: 0.9rem;">
-              <img src="${avatarImg}" width="40" style="border-radius: 50%; vertical-align: middle; margin-bottom: 5px;">
-              <p><strong>Name:</strong> ${userData.firstName} ${userData.secondName}</p>
-              <p style="word-break: break-all; color: gray;">${userData.email}</p>
+              <img src="${escapeHtml(avatarImg)}" width="40" style="border-radius: 50%; vertical-align: middle; margin-bottom: 5px;" alt="Avatar">
+              <p><strong>Name:</strong> ${escapeHtml(userData.firstName || "")} ${escapeHtml(userData.secondName || "")}</p>
+              <p><strong>Username:</strong> ${escapeHtml(userData.username || "")}</p>
+              <p style="word-break: break-all; color: gray;"><strong>Email:</strong> ${escapeHtml(userData.email || currentUser.email)}</p>
+              <p style="font-size: 0.8rem; color: gray;"><strong>User ID:</strong> ${escapeHtml(currentUser.uid)}</p>
+              <p style="font-size: 0.8rem; color: gray;"><strong>Created:</strong> ${escapeHtml(createdDate)}</p>
             </div>
           `;
         } else {
           console.warn("No Firestore profile exists for this active UID yet.");
           userDiv.innerHTML = `
             <h3>Profile</h3>
-            <p style="font-size: 0.9rem; color: gray;">${currentUser.email}</p>
+            <p style="font-size: 0.9rem; color: gray;">${escapeHtml(currentUser.email)}</p>
           `;
         }
       });
 
-     
       if (!unsubscribeEvents) {
         unsubscribeEvents = listenForEvents(eventsDiv);
-      }
-      if (!unsubscribeUsers) {
-        unsubscribeUsers = listenForCurrentUserProfile(currentUser, usersDiv);
       }
 
     } else {
@@ -200,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Handle User Logouts
+  
   signOutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     try {
@@ -213,14 +206,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
- 
+  
   createEventBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const title = document.getElementById("title")?.value.trim();
-    const location = document.getElementById("location")?.value.trim();
-    const date = document.getElementById("date")?.value;
-    const time = document.getElementById("time")?.value;
+    const form = e.target.closest("form");
+    const titleInput = document.getElementById("title");
+    const locationInput = document.getElementById("location");
+    const dateInput = document.getElementById("date");
+    const timeInput = document.getElementById("time");
+
+    const title = titleInput?.value.trim();
+    const location = locationInput?.value.trim();
+    const date = dateInput?.value;
+    const time = timeInput?.value;
 
     if (!title || !location || !date || !time) {
       alert("All fields are required");
@@ -228,6 +227,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      createEventBtn.disabled = true;
+      createEventBtn.textContent = "Creating...";
+
       await addDoc(collection(db, "events"), {
         title,
         location,
@@ -235,20 +237,19 @@ document.addEventListener("DOMContentLoaded", () => {
         time,
         createdAt: serverTimestamp()
       });
-      alert("Event created successfully");
       
-     
-      document.getElementById("title").value = "";
-      document.getElementById("location").value = "";
-      document.getElementById("date").value = "";
-      document.getElementById("time").value = "";
+      alert("Event created successfully");
+      if (form) form.reset();
+      
     } catch (error) {
       console.error("Error creating event:", error);
       alert("Failed to create event.");
+    } finally {
+      createEventBtn.disabled = false;
+      createEventBtn.textContent = "Create Event";
     }
   });
-
-
+  
   eventsDiv.addEventListener("click", async (e) => {
     const button = e.target.closest("button");
     if (!button) return;
@@ -290,37 +291,19 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Operation failed. Verify database rules configuration.");
     }
   });
-});
+}
 
 
-function listenForEvents(eventsDiv) {
+function listenForEvents(targetDisplayContainer) {
   return onSnapshot(collection(db, "events"), (snapshot) => {
-    eventsDiv.innerHTML = "";
+    targetDisplayContainer.innerHTML = "";
     snapshot.forEach((docSnap) => {
       const eventCard = createEventCard(docSnap.id, docSnap.data());
-      eventsDiv.appendChild(eventCard);
+      targetDisplayContainer.appendChild(eventCard);
     });
   });
 }
 
-function listenForCurrentUserProfile(currentUser, usersDiv) {
-  const userRef = doc(db, "users", currentUser.uid);
-
-  return onSnapshot(userRef, (docSnap) => {
-    usersDiv.innerHTML = "";
-
-    if (!docSnap.exists()) {
-      const errorMsg = document.createElement("p");
-      errorMsg.style.color = "red";
-      errorMsg.textContent = "No profile found for this user.";
-      usersDiv.appendChild(errorMsg);
-      return;
-    }
-
-    const card = createUserCard(currentUser.uid, docSnap.data(), currentUser.email);
-    usersDiv.appendChild(card);
-  });
-}
 
 function createEventCard(id, event) {
   const wrapper = document.createElement("div");
@@ -344,48 +327,7 @@ function createEventCard(id, event) {
   return wrapper;
 }
 
-function createUserCard(userId, user, fallbackEmail = "") {
-  const wrapper = document.createElement("div");
-  wrapper.className = "user-card";
-
-  const img = document.createElement("img");
-  
-  
-  let safeSrc = "https://ui-avatars.com" + encodeURIComponent(user.firstName || "User");
-  if (user.profilePictureUrl && user.profilePictureUrl !== "default-avatar.png") {
-    safeSrc = user.profilePictureUrl;
-  }
-  img.src = escapeHtml(safeSrc);
-  img.width = 40;
-  img.style.borderRadius = "3px";
-
-  const hr = document.createElement("hr");
-
-  const name = document.createElement("p");
-  const strongName = document.createElement("strong");
-  strongName.textContent = `${user.firstName || ""} ${user.secondName || ""}`;
-  name.appendChild(strongName);
-
-  const username = document.createElement("p");
-  username.textContent = `Username: ${user.username || ""}`;
-
-  const email = document.createElement("p");
-  email.textContent = `Email: ${user.email || fallbackEmail}`;
-
-  const id = document.createElement("p");
-  id.textContent = `User ID: ${userId}`;
-
-  const created = document.createElement("p");
-  created.textContent = `Created: ${
-    user.createdAt && typeof user.createdAt.toDate === "function" 
-      ? user.createdAt.toDate().toLocaleDateString() 
-      : "N/A"
-  }`;
-
-  wrapper.append(img, hr, name, username, email, id, created);
-  return wrapper;
-}
-
+// HTML Injection Escaper 
 function escapeHtml(value) {
   if (typeof value !== "string") return "";
   return value
@@ -396,6 +338,4 @@ function escapeHtml(value) {
     .replaceAll("'", "&#x27;");
 }
 </script>
-
-
 </html>
