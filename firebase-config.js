@@ -1,8 +1,7 @@
-// firebase-config.js
 export const firebaseConfig = {
   apiKey: "AIzaSyDewnlmrqgHffKSID_XtQRTc7aTRRDloic",
-  authDomain: "://firebaseapp.com",
-  databaseURL: "https://firebaseio.com",
+  authDomain: "my-eventswhatsup.firebaseapp.com", 
+  databaseURL: "https://my-eventswhatsup.firebaseio.com", 
   projectId: "my-eventswhatsup",
   storageBucket: "my-eventswhatsup.firebasestorage.app",
   messagingSenderId: "82839194346",
