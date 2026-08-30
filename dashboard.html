@@ -90,8 +90,8 @@
 <script src="hamburger.js"></script>
 <script type="module">
 
-import { initializeApp } from "/__/firebase/12.7.0/firebase-app.js";
-import { getAnalytics } from "/__/firebase/12.7.0/firebase-analytics.js";
+import { initializeApp } from "https://gstatic.com";
+import { getAnalytics } from "https://gstatic.com";
 import {
   getFirestore,
   collection,
@@ -101,14 +101,13 @@ import {
   doc,
   updateDoc,
   serverTimestamp
-} from "/__/firebase/12.7.0/firebase-firestore.js";
+} from "https://gstatic.com";
 import {
   getAuth,
   onAuthStateChanged,
   signOut
-} from "/__/firebase/12.7.0/firebase-auth.js";
+} from "https://gstatic.com";
 
-// Clean import from your dedicated configurations file
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
