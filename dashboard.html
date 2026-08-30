@@ -89,8 +89,9 @@
 </body>
 <script src="hamburger.js"></script>
 <script type="module">
-import { initializeApp } from "https://gstatic.com";
-import { getAnalytics } from "https://gstatic.com";
+
+import { initializeApp } from "/__/firebase/12.7.0/firebase-app.js";
+import { getAnalytics } from "/__/firebase/12.7.0/firebase-analytics.js";
 import {
   getFirestore,
   collection,
@@ -100,14 +101,14 @@ import {
   doc,
   updateDoc,
   serverTimestamp
-} from "https://gstatic.com";
+} from "/__/firebase/12.7.0/firebase-firestore.js";
 import {
   getAuth,
   onAuthStateChanged,
   signOut
-} from "https://gstatic.com";
+} from "/__/firebase/12.7.0/firebase-auth.js";
 
-
+// Clean import from your dedicated configurations file
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
@@ -116,7 +117,7 @@ getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-//I want to avoid memory leakage here
+//Listener tracking to avoid leakage
 let unsubscribeProfile = null;
 let unsubscribeEvents = null;
 
@@ -138,7 +139,7 @@ if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv) {
   console.error("Initialization Failed: Missing required DOM elements.");
 } else {
   
-  
+ 
   onAuthStateChanged(auth, (currentUser) => {
     if (currentUser) {
       console.log("Logged in user identity verified:", currentUser.uid);
@@ -153,7 +154,6 @@ if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv) {
           const userData = docSnap.data();
           console.log("Showing dynamic current user details:", userData);
 
-          
           let avatarImg = "https://ui-avatars.com" + encodeURIComponent(userData.firstName || "User");
           if (userData.profilePictureUrl && userData.profilePictureUrl !== "default-avatar.png") {
             avatarImg = userData.profilePictureUrl;
@@ -193,7 +193,7 @@ if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv) {
     }
   });
 
-  
+  // Handle User Logouts
   signOutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     try {
@@ -206,7 +206,7 @@ if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv) {
     }
   });
 
-  
+ 
   createEventBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -249,6 +249,7 @@ if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv) {
       createEventBtn.textContent = "Create Event";
     }
   });
+ 
   
   eventsDiv.addEventListener("click", async (e) => {
     const button = e.target.closest("button");
