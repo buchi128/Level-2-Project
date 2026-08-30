@@ -177,7 +177,7 @@ if (!userDiv || !signOutBtn || !createEventBtn || !eventsDiv) {
           console.warn("No Firestore profile exists for this active UID yet.");
           userDiv.innerHTML = `
             <h3>Profile</h3>
-            <p style="font-size: 0.9rem; color: gray;">${escapeHtml(currentUser.email)}</p>
+            <p style="font-size: 0.9rem; color: gray;"><strong>${escapeHtml(currentUser.email)}</strong></p>
           `;
         }
       });
